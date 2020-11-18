@@ -22,13 +22,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.todoHausenn.controler.generic.Controller;
+import com.todoHausenn.exception.ResourceNotFoundDetails;
 import com.todoHausenn.exception.ResourceNotFoundException;
 import com.todoHausenn.model.TodoHausenn;
 import com.todoHausenn.service.interfaces.ITodoHausennService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/v1")
-//@Api(value = "todo", description = "Todo API")
+@Api(value = "todo", description = "Todo API")
 public class TodoHausennRestController extends Controller<TodoHausenn, ITodoHausennService> {
 
 	private static final long serialVersionUID = 1L;
@@ -44,41 +50,41 @@ public class TodoHausennRestController extends Controller<TodoHausenn, ITodoHaus
 
 	@RequestMapping(value = "/todo", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Exception.class)
-//	@ApiOperation(value = "Cria um novo Todo", notes = "O ID do todo recém-criado será enviado no cabeçalho de resposta do local", response = Void.class)
-//	@ApiResponses(value = { @ApiResponse(code = 201, message = "Todo criado com sucesso", response = Void.class),
-//			@ApiResponse(code = 500, message = "Erra criar Todo", response = ResourceNotFoundDetails.class) })
+	@ApiOperation(value = "Cria um novo Todo", notes = "O ID do todo recém-criado será enviado no cabeçalho de resposta do local", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 201, message = "Todo criado com sucesso", response = Void.class),
+			@ApiResponse(code = 500, message = "Erra criar Todo", response = ResourceNotFoundDetails.class) })
 	public ResponseEntity<TodoHausenn> salvar(@Valid @RequestBody TodoHausenn todoHausenn) {
 		todoHausenn = getService().salvar(todoHausenn);
 
 		HttpHeaders responseHeaders = new HttpHeaders();
-		URI newTodoHausennUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(todoHausenn.getId())
-				.toUri();
+		URI newTodoHausennUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+				.buildAndExpand(todoHausenn.getId()).toUri();
 		responseHeaders.setLocation(newTodoHausennUri);
-		
+
 		return new ResponseEntity<>(todoHausenn, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/todo", method = RequestMethod.GET)
-//	@ApiOperation(value = "Recupera todos os Todo", response = TodoHausenn.class, responseContainer = "Lista")
+	@ApiOperation(value = "Recupera todos os Todo", response = TodoHausenn.class, responseContainer = "Lista")
 	public ResponseEntity<Page<TodoHausenn>> listar(Pageable pageable) {
 		Page<TodoHausenn> todoHausenns = getService().listar(pageable);
 		return new ResponseEntity<>(todoHausenns, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/todo/{id}", method = RequestMethod.PUT)
-//	@ApiOperation(value = "Atualiza determinados Todo", response = Void.class)
-//	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
-//			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
-	public ResponseEntity<TodoHausenn> atualizar(@PathVariable ("id") Integer id,@RequestBody TodoHausenn todoHausenn) {
+	@ApiOperation(value = "Atualiza determinados Todo", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
+			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
+	public ResponseEntity<TodoHausenn> atualizar(@PathVariable("id") Integer id, @RequestBody TodoHausenn todoHausenn) {
 		verificarID(id);
 		todoHausenn = getService().atualizar(todoHausenn);
-		return new ResponseEntity<>(todoHausenn,HttpStatus.OK);
+		return new ResponseEntity<>(todoHausenn, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/todo/{id}", method = RequestMethod.GET)
-//	@ApiOperation(value = "Recupera dado Todo", response = TodoHausenn.class)
-//	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = TodoHausenn.class),
-//			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
+	@ApiOperation(value = "Recupera dado Todo", response = TodoHausenn.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = TodoHausenn.class),
+			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
 	public ResponseEntity<Optional<TodoHausenn>> obter(@PathVariable Integer id) {
 		verificarID(id);
 		Optional<TodoHausenn> todoHausenn = getService().obter(id);
@@ -86,28 +92,28 @@ public class TodoHausennRestController extends Controller<TodoHausenn, ITodoHaus
 	}
 
 	@RequestMapping(value = "/todo/{id}", method = RequestMethod.DELETE)
-//	@ApiOperation(value = "Excluir Todo", response = Void.class)
-//	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
-//			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
+	@ApiOperation(value = "Excluir Todo", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
+			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
 	public ResponseEntity<Void> excluir(@PathVariable Integer id) {
 		verificarID(id);
 		getService().excluir(id);
-		return new ResponseEntity<>( HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/todo", method = RequestMethod.DELETE)
-//	@ApiOperation(value = "Todos excluidos Todo", response = Void.class)
-//	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
-//			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
+	@ApiOperation(value = "Todos excluidos Todo", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
+			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
 	public ResponseEntity<Void> todos_excluir() {
 		getService().todos_excluir();
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/todo/search/{name}", method = RequestMethod.GET)
-//	@ApiOperation(value = "Todos excluidos Todo", response = Void.class)
-//	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
-//			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
+	@ApiOperation(value = "Todos excluidos Todo", response = Void.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "", response = Void.class),
+			@ApiResponse(code = 404, message = "Não encontra Todo", response = ResourceNotFoundDetails.class) })
 	public ResponseEntity<List<TodoHausenn>> findByName(@PathVariable final String name) {
 
 		List<TodoHausenn> todoHausenn = getService().findByName(name);

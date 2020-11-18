@@ -93,18 +93,6 @@ public class TodoHausennControllerIT {
 		Assertions.assertThat(todoHausenn.getId()).isEqualTo(exectedId);
 	}
 	
-/*	@Test
-	@DisplayName("TodoHausen whit id not found")
-	public void todoHausen_idNotFound_whenSuccessful() {
-		Integer exectedId = TodoHausennCreator.createValidTodoHausenn().getId();
-
-	 TodoHausenn todoHausenn = testRestTemplate.getForObject("/v1/todo/1", TodoHausenn.class);
-
-	    Assertions.assertThat(todoHausenn).isNotNull();
-		Assertions.assertThat(todoHausenn.getId()).isNotNull();
-		Assertions.assertThat(todoHausenn.getId()).isEqualTo(exectedId);
-	}*/
-
 	@Test
 	@DisplayName("FindByName return an todoHausen when successful")
 	public void findByName_return_TodoHausen_whenSuccessful() {
